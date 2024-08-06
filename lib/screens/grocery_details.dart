@@ -48,7 +48,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
                   Text(
                     "Category: ",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontSize: 28,
+                          fontSize: 20,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -57,7 +57,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
                     width: 20,
                   ),
                   Text(
-                    item.category.toString(),
+                    item.category.title.toString(),
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontSize: 18,
                           color: Colors.black,
@@ -74,7 +74,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
                   Text(
                     "quantity: ",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontSize: 28,
+                          fontSize: 20,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -89,9 +89,12 @@ class GroceryDetailsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+              const SizedBox(
+                height: 40,
+              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Spacer(),
                   FilledButton.icon(
                     label: const Text(
                       "decrement",

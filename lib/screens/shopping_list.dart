@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopping_list_app/providers/grocery_provider.dart';
 import 'package:shopping_list_app/screens/add_item.dart';
@@ -44,26 +45,33 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   @override
   Widget build(BuildContext context) {
     final groceryItems = ref.watch(groceryItemsProvider);
-    if (getResponseData == null && !isLoading) {
-      body = const Center(
-        child: Text(
-          'Server Erorr Please Try Again Later',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    } else if (isLoading) {
+
+    if (isLoading) {
       body = const Center(
         child: CircularProgressIndicator(),
+      );
+    } else if (getResponseData == null) {
+      body = SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: const Center(
+            child: Text(
+              'Server Error Please Try Again Later',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       );
     } else if (groceryItems.isEmpty) {
       body = const Center(
         child: Text(
           'No Groceries yet',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -73,14 +81,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
         itemCount: groceryItems.length,
         itemBuilder: (ctx, index) => Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 10,
+            vertical: 5,
             horizontal: 10,
           ),
           child: Dismissible(
             background: Container(
               margin: const EdgeInsets.symmetric(
-                vertical: 15,
-                // horizontal: 8,
+                vertical: 12,
               ),
               decoration: BoxDecoration(
                 color: Colors.red,
@@ -88,7 +95,12 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [Icon(Icons.delete)],
+                children: [
+                  Icon(Icons.delete_forever),
+                  SizedBox(
+                    width: 15,
+                  ),
+                ],
               ),
             ),
             direction: DismissDirection.endToStart,
@@ -120,7 +132,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
           ),
         ],
       ),
-      body: body,
+      body: RefreshIndicator(onRefresh: fetchData, child: body!),
     );
   }
 }

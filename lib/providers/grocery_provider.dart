@@ -16,10 +16,10 @@ class GroceryItemsNotifier extends StateNotifier<List<GroceryItem>> {
     try {
       respons = await http.get(baseUrl);
     } catch (e) {
-      return false;
+      return null;
     }
     if (respons.body == 'null') {
-      return false;
+      return [];
     } else if (respons.statusCode < 400) {
       final Map<String, dynamic> listData = json.decode(respons.body);
       final List<GroceryItem> loadedItem = [];
