@@ -12,7 +12,7 @@ class GroceryItemsNotifier extends StateNotifier<List<GroceryItem>> {
 
   Future loadData() async {
     // http.
-    var respons;
+    http.Response respons;
     try {
       respons = await http.get(baseUrl);
     } catch (e) {
@@ -28,13 +28,12 @@ class GroceryItemsNotifier extends StateNotifier<List<GroceryItem>> {
             .firstWhere(
                 (element) => element.value.title == item.value['category'])
             .value;
-        loadedItem.add(
-          GroceryItem(
-              id: item.key,
-              name: item.value['name'],
-              quantity: item.value['quantity'],
-              category: category),
-        );
+        loadedItem.add(GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category,
+            date: item.value['date']));
       }
       state = loadedItem;
       return true;
@@ -51,7 +50,8 @@ class GroceryItemsNotifier extends StateNotifier<List<GroceryItem>> {
         id: item.id,
         name: item.name,
         quantity: item.quantity + 1,
-        category: item.category);
+        category: item.category,
+        date: item.date);
     List<GroceryItem> newState = [...state];
     newState.remove(groceryItem);
     newState.insert(index, newItem);
@@ -78,7 +78,8 @@ class GroceryItemsNotifier extends StateNotifier<List<GroceryItem>> {
           id: item.id,
           name: item.name,
           quantity: item.quantity - 1,
-          category: item.category);
+          category: item.category,
+          date: item.date);
       List<GroceryItem> newState = [...state];
       newState.remove(groceryItem);
       newState.insert(index, newItem);

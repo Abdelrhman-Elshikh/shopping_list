@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shopping_list_app/main.dart';
 import 'package:shopping_list_app/providers/grocery_provider.dart';
 import 'package:shopping_list_app/screens/add_item.dart';
 import 'package:shopping_list_app/widgets/grocery_item.dart';
+import 'package:shopping_list_app/widgets/snack_bars.dart';
 
 class ShoppingListScreen extends ConsumerStatefulWidget {
   const ShoppingListScreen({super.key});
@@ -16,7 +18,7 @@ class ShoppingListScreen extends ConsumerStatefulWidget {
 
 class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
   var isLoading = true;
-  var getResponseData = null;
+  var getResponseData;
   Widget? body;
   final baseUrl = Uri.https(
       'shopping-list-ec1d8-default-rtdb.firebaseio.com', 'shopping-list.json');
@@ -68,11 +70,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
       );
     } else if (groceryItems.isEmpty) {
       body = const Center(
-        child: Text(
-          'No Groceries yet',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+        child: FittedBox(
+          child: Text(
+            'No Groceries yet',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       );
@@ -87,7 +91,7 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
           child: Dismissible(
             background: Container(
               margin: const EdgeInsets.symmetric(
-                vertical: 12,
+                vertical: 20,
               ),
               decoration: BoxDecoration(
                 color: Colors.red,
@@ -109,13 +113,10 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
               ref
                   .read(groceryItemsProvider.notifier)
                   .removeItem(groceryItems[index]);
+              SnackBars.error(context: context, massage: 'Item removed');
             },
             child: GroceryItemWidget(
               groceryItem: groceryItems[index],
-              id: groceryItems[index].id,
-              color: groceryItems[index].category.color,
-              quantity: groceryItems[index].quantity,
-              title: groceryItems[index].name,
             ),
           ),
         ),
@@ -123,14 +124,13 @@ class _ShoppingListScreenState extends ConsumerState<ShoppingListScreen> {
     }
 
     return Scaffold(
+      // bottomNavigationBar: const BottomTabBar(),
       appBar: AppBar(
-        title: const Text("Shopping List"),
-        actions: [
-          IconButton(
-            onPressed: _addItem,
-            icon: const Icon(Icons.add),
-          ),
-        ],
+        backgroundColor: ThemeData().colorScheme.onSurface,
+        title: Text("Shopping List",
+            style: ThemeData().textTheme.titleLarge!.copyWith(
+                  color: Colors.white,
+                )),
       ),
       body: RefreshIndicator(onRefresh: fetchData, child: body!),
     );

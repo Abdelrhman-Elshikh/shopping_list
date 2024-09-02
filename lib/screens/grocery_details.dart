@@ -13,7 +13,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var item;
+    GroceryItem? item;
     try {
       item = ref
           .watch(groceryItemsProvider)
@@ -23,8 +23,9 @@ class GroceryDetailsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      
       appBar: AppBar(
-        title: Text(item.name),
+        title: Text(item!.name),
       ),
       body: Hero(
         tag: ValueKey(item.id),
@@ -105,7 +106,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
                     onPressed: () {
                       ref
                           .read(groceryItemsProvider.notifier)
-                          .decrementQuentity(item);
+                          .decrementQuentity(item!);
                     },
                     icon: const Icon(
                       Icons.exposure_neg_1_outlined,
@@ -120,7 +121,7 @@ class GroceryDetailsScreen extends ConsumerWidget {
                     onPressed: () {
                       ref
                           .read(groceryItemsProvider.notifier)
-                          .incrementQuentity(item);
+                          .incrementQuentity(item!);
                     },
                     icon: const Icon(
                       Icons.plus_one_sharp,

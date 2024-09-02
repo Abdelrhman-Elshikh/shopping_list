@@ -7,6 +7,8 @@ import 'package:shopping_list_app/models/grocery_item.dart';
 import 'package:shopping_list_app/providers/grocery_provider.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shopping_list_app/routers/routers.dart';
+import 'package:shopping_list_app/widgets/TabBar/bottom_tab.dart';
 
 final baseUrl = Uri.https(
     'shopping-list-ec1d8-default-rtdb.firebaseio.com', 'shopping-list.json');
@@ -43,6 +45,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
             'name': _enteredName,
             'quantity': _enteredQuantity,
             'category': _selectedCategory!.title,
+            'date': (formattedDate.toString()),
           },
         ),
       );
@@ -52,13 +55,14 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                 id: jsonDecode(response.body)['name'],
                 name: _enteredName,
                 quantity: _enteredQuantity,
-                category: _selectedCategory!),
+                category: _selectedCategory!,
+                date: formattedDate.toString()),
           );
 
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).pop();
+      router.go('/');
     }
   }
 
@@ -66,7 +70,11 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Item'),
+        backgroundColor: ThemeData().colorScheme.onSurface,
+        title: Text('Add New Item',
+            style: ThemeData().textTheme.titleLarge!.copyWith(
+                  color: Colors.white,
+                )),
       ),
       body: Padding(
         padding: const EdgeInsets.all(3),
@@ -74,23 +82,33 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                maxLength: 50,
-                decoration: const InputDecoration(
-                  label: Text('Name'),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                  maxLength: 50,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    label: const Text(
+                      'Name',
+                    ),
+                    labelStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length <= 1 ||
+                        value.trim().length > 50) {
+                      return 'Must be between 1 and 50 characters';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _enteredName = value!;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length <= 1 ||
-                      value.trim().length > 50) {
-                    return 'Must be between 1 and 50 characters';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _enteredName = value!;
-                },
+              ),
+              const SizedBox(
+                height: 20,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -98,6 +116,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                   Expanded(
                     child: TextFormField(
                       keyboardType: TextInputType.number,
+                      style: Theme.of(context).textTheme.bodyMedium,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -107,8 +126,11 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
-                        label: Text('Quantity'),
+                      decoration: InputDecoration(
+                        label: const Text(
+                          'Quantity',
+                        ),
+                        labelStyle: Theme.of(context).textTheme.labelLarge,
                       ),
                       initialValue: '1',
                       onSaved: (value) {
@@ -121,6 +143,7 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                   ),
                   Expanded(
                     child: DropdownButtonFormField(
+                      style: Theme.of(context).textTheme.bodyMedium,
                       value: _selectedCategory,
                       items: [
                         for (final category in categories.entries)
@@ -129,8 +152,8 @@ class _AddItemScreenState extends ConsumerState<AddItemScreen> {
                             child: Row(
                               children: [
                                 Container(
-                                  width: 16,
-                                  height: 16,
+                                  width: 20,
+                                  height: 20,
                                   color: category.value.color,
                                 ),
                                 const SizedBox(
